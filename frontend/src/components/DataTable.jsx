@@ -2,6 +2,20 @@ import React from "react";
 
 function DataTable({ funding }) {
   console.log(funding);
+
+  let filterOutWords = [
+    "housing",
+    "community",
+    "grant",
+    "developers",
+    "projects",
+    "low",
+  ];
+
+  function rateSucces(word, filterOutWords) {
+    return word.filter((word) => filterOutWords.includes(word)).length;
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="overflow-x-auto shadow-md sm:rounded-lg">
@@ -43,7 +57,27 @@ function DataTable({ funding }) {
               </th>
             </tr>
           </thead>
-          <tbody>{/* Table rows would go here */}</tbody>
+          <tbody>
+            {funding.map((fun, index) => (
+              <tr>
+                <td>{index + 1}</td>
+                <td></td>
+                <td data-label="link">
+                  <a href={fun.Link} target="_blank">
+                    {fun.Link}
+                  </a>
+                </td>
+                <td></td>
+                <td>{fun.Resource}</td>
+                <td></td>
+                <td>{fun.Description}</td>
+                <td></td>
+                <td></td>
+                <td>{fun.CreatedAt}</td>
+                <td></td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

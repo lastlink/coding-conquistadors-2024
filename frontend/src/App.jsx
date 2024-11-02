@@ -11,27 +11,25 @@ import HomePage from "./pages/HomePage";
 import SubscribePage from "./pages/SubscribePage";
 import DataPage from "./pages/DataPage";
 import { useEffect, useState } from "react";
+import fundingData from "../../../db.json";
 
 function App() {
   // API fetch requests go here:
   const [funding, setFunding] = useState([]);
 
-  const apiURL = "";
-
   useEffect(() => {
     const fetchFunding = async () => {
       try {
-        const res = await fetch(`${apiURL}/`);
-        const data = await res.json();
-        setFunding(data);
+        // const res = await fetch(`${apiURL}/`);
+        // const data = await res.json();
+        const dbJson = fundingData;
+        setFunding(dbJson);
       } catch (error) {
         console.log("Error fetching data", error);
       }
     };
     fetchFunding();
   }, []);
-
-  // API POST requests go here:
 
   // Routes go here:
 

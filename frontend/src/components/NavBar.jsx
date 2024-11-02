@@ -10,7 +10,7 @@ function NavBar() {
             <span>Home</span>
           </NavLink>
         </div>
-        <div className="text-4xl">CLT Info App</div>
+        <div className="text-4xl">CFL CLT Connect</div>
         <div className="flex flex-row justify-between align-middle">
           <NavLink to="/data_table">
             <div className="mx-2">Grants</div>
