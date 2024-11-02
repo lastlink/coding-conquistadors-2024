@@ -6,33 +6,32 @@
 */
 
 CREATE TABLE "Grants" (
-	"Id" intNOTNULL,
-	"PreviousId" intNULL,
-	"Link" varcharnotnull(1000),
-	"ApplicationLink" varchar(1000),
-	"Resource" varchar(255),
+	"Id" int NOT NULL,
+	"PreviousId" int NULL,
+	"Link" text not null,
+	"ApplicationLink" text,
+	"Resource" text,
 	"Type" int,
-	"Description" varchar(255),
-	"StartDate" datetimenull,
-	"EndDate" datetimenull,
-	"CreatedAt" datetime,
-	"UpdatedAt" datetime,
-	PRIMARY KEY("Id")
+	"Description" text,
+	"StartDate" DATETIME null,
+	"EndDate" DATETIME null,
+	"CreatedAt" DATETIME DEFAULT CURRENT_TIMESTAMP,
+	"UpdatedAt" DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("Id" AUTOINCREMENT)
 );
-
 
 -- type individual or community
 
 CREATE TABLE "GrantKeyword" (
-	"GrantId" intNOTNULL,
-	"KeywordId" intNOTNULL,
+	"GrantId" int NOT NULL,
+	"KeywordId" int NOT NULL,
 	PRIMARY KEY("GrantId","KeywordId")
 );
 
 CREATE TABLE "Keywords" (
-	"Keyword" intNOTNULLPRIMARYKEY,
-	"Name" varchar(100),
-	PRIMARY KEY("Keyword")
+	"Id" int NOT NULL PRIMARY KEY,
+	"Name" text,
+	PRIMARY KEY("Id" AUTOINCREMENT)
 );
 
 -- need subscribers
