@@ -2,13 +2,16 @@ import puppeteer from 'puppeteer';
 import { openDb } from './database';
 import links from '../Link_for_Funds_With_PrimaryKey.json';
 import { LinkDetails } from './types/link';
+import { performance } from 'perf_hooks';
 
 async function scrapeUrls(urlDetails: LinkDetails[]) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     const db = await openDb();
-    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, link TEXT, data TEXT)');
+    await db.exec('DROP TABLE IF EXISTS scraped_data');
+    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, link TEXT, data TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)');
+    const start: number = performance.now();
 
     for (const urlDetail of urlDetails) {
         try {
@@ -26,24 +29,28 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
               .replace(/[,]/g, ' ')
               .split(/\s+/).filter(word => word && word.length > 0);
             const commaSeparatedWords = words.join(',');
-            // const data = await page.evaluate(() => {
-            //     // Example: Extract the page title
-            //     return document.title;
-            // });
             
             // const data = await scrape();
             if (commaSeparatedWords) {
               await db.run('INSERT INTO scraped_data (link, data) VALUES (?, ?)', urlDetail.Link, commaSeparatedWords);
             }
 
-            // console.log('Scraping completed and data saved to database.');
             console.log(`Data from ${urlDetail.Link}: ${words.length}`);
         } catch (error) {
             console.error(`Error scraping ${urlDetail.Link}:`, error);
+            await db.run('INSERT INTO scraped_data (link, data) VALUES (?, ?)', urlDetail.Link, JSON.stringify(error));
         }
+        
+        const current: number = performance.now();
+        const elapsedSeconds: number = (current - start) / 1000;
+        console.log(`Time elapsed at iteration ${urlDetail.ID}: ${elapsedSeconds.toFixed(3)} seconds`);
     }
 
     await browser.close();
+    const end: number = performance.now();
+    const totalElapsedSeconds: number = (end - start) / 1000;
+    console.log(`Total execution time: ${totalElapsedSeconds.toFixed(3)} seconds`);
+    console.log('Scraping completed and data saved to database.');
 }
 
 async function scrape() {
