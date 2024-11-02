@@ -10,7 +10,7 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
 
     const db = await openDb();
     await db.exec('DROP TABLE IF EXISTS scraped_data');
-    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, link TEXT, data TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)');
+    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, "error" INTEGER DEFAULT 0, link TEXT, data TEXT)');
     const start: number = performance.now();
 
     for (const urlDetail of urlDetails) {
@@ -38,7 +38,15 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
             console.log(`Data from ${urlDetail.Link}: ${words.length}`);
         } catch (error) {
             console.error(`Error scraping ${urlDetail.Link}:`, error);
-            await db.run('INSERT INTO scraped_data (link, data) VALUES (?, ?)', urlDetail.Link, JSON.stringify(error));
+            let errorMessage;
+            if (error instanceof Error) {
+                // If the error is an instance of Error, use the message property
+                errorMessage = error.message;
+            } else {
+                // If the error is not an instance of Error, convert it to a string
+                errorMessage = String(error);
+            }  
+            await db.run('INSERT INTO scraped_data (error, link, data) VALUES (1, ?, ?)', urlDetail.Link, errorMessage);
         }
         
         const current: number = performance.now();
