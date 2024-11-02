@@ -11,7 +11,9 @@ CREATE TABLE "Grants" (
 	"Link" text not null,
 	"ApplicationLink" text,
 	"Resource" text,
-	"Type" int,
+    "Rating"	REAL,
+	"Type" int, -- individual or community
+    "ApplicationType" int -- online, inperson, email
 	"Description" text,
 	"StartDate" DATETIME null,
 	"EndDate" DATETIME null,
