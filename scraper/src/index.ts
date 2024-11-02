@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { openDb } from './database';
+// from https://mikehodges.net/OrlandoHousing/webScraping/data/Link_for_Funds_With_PrimaryKey.json
 import links from '../Link_for_Funds_With_PrimaryKey.json';
 import { LinkDetails, LinkScrape } from './types/link';
 import { performance } from 'perf_hooks';
