@@ -12,8 +12,27 @@ function DataTable({ funding }) {
     "low",
   ];
 
-  function rateSucces(word, filterOutWords) {
-    return word.filter((word) => filterOutWords.includes(word)).length;
+  function rateSucces(word) {
+    return word?.filter((word) => filterOutWords.includes(word)).length;
+  }
+
+  let results = funding
+    .map((e) => {
+      return {
+        ...e,
+        rating: rateSucces(e.Words),
+      };
+    })
+    .sort((a, b) => b.rating - a.rating);
+
+  function getColor(value) {
+    if (value > 20) {
+      return "green";
+    } else if (value > 5) {
+      return "yellow";
+    } else {
+      return "red";
+    }
   }
 
   return (
@@ -38,7 +57,7 @@ function DataTable({ funding }) {
                 Resource
               </th>
               <th scope="col" className="px-6 py-3">
-                Type
+                Funding Success Rating
               </th>
               <th scope="col" className="px-6 py-3">
                 Description
@@ -58,18 +77,21 @@ function DataTable({ funding }) {
             </tr>
           </thead>
           <tbody>
-            {funding.map((fun, index) => (
-              <tr>
+            {results.map((fun, index) => (
+              <tr
+                key={index}
+                className="text-black border-b-2 border-black my-2"
+              >
                 <td>{index + 1}</td>
                 <td></td>
                 <td data-label="link">
-                  <a href={fun.Link} target="_blank">
+                  <a href={fun.Link} target="_blank" className="text-blue-600">
                     {fun.Link}
                   </a>
                 </td>
                 <td></td>
                 <td>{fun.Resource}</td>
-                <td></td>
+                <td style={{ color: getColor(fun.rating) }}>{fun.rating}</td>
                 <td>{fun.Description}</td>
                 <td></td>
                 <td></td>
