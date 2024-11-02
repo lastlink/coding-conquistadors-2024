@@ -16,7 +16,7 @@ function NavBar() {
             <div className="mx-2">Grants</div>
           </NavLink>
           <NavLink to="/subscribe">
-            <div>Contact Us</div>
+            <div>Subscribe for Alerts</div>
           </NavLink>
         </div>
       </div>
