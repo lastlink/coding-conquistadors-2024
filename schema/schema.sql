@@ -6,7 +6,7 @@
 */
 
 CREATE TABLE "Grants" (
-	"Id" int NOT NULL,
+	"Id" integer NOT NULL,
 	"PreviousId" int NULL,
 	"Link" text not null,
 	"ApplicationLink" text,
@@ -21,17 +21,19 @@ CREATE TABLE "Grants" (
 );
 
 -- type individual or community
-
-CREATE TABLE "GrantKeyword" (
-	"GrantId" int NOT NULL,
-	"KeywordId" int NOT NULL,
-	PRIMARY KEY("GrantId","KeywordId")
-);
-
 CREATE TABLE "Keywords" (
-	"Id" int NOT NULL PRIMARY KEY,
+	"Id" integer NOT NULL PRIMARY KEY,
 	"Name" text,
 	PRIMARY KEY("Id" AUTOINCREMENT)
+);
+
+
+CREATE TABLE "GrantKeyword" (
+	"GrantId" integer NOT NULL,
+	"KeywordId" integer NOT NULL,
+    FOREIGN KEY (GrantId) REFERENCES "Grants" (Id),
+    FOREIGN KEY (KeywordId) REFERENCES "Keywords" (Id),
+	PRIMARY KEY("GrantId","KeywordId")
 );
 
 -- need subscribers
