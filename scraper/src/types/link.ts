@@ -4,3 +4,10 @@ export interface LinkDetails {
   Description: string;
   Link: string;
 }
+
+export interface LinkScrape {
+    Link: string;
+    Words?: string[];
+    Error: boolean;
+    ErrorMessage?: string;
+}
