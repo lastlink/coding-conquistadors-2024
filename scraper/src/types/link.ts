@@ -8,6 +8,9 @@ export interface LinkDetails {
 export interface LinkScrape {
     Link: string;
     Words?: string[];
+    PageTitle?: string;
+    Description: string;
+    Resource: string;
     Error: boolean;
     ErrorMessage?: string;
 }

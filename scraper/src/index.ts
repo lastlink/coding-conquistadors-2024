@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { openDb } from './database';
+import chalk from 'chalk';
 // from https://mikehodges.net/OrlandoHousing/webScraping/data/Link_for_Funds_With_PrimaryKey.json
 import links from '../Link_for_Funds_With_PrimaryKey.json';
 import { LinkDetails, LinkScrape } from './types/link';
@@ -9,11 +10,12 @@ import * as fs from 'fs';
 async function scrapeUrls(urlDetails: LinkDetails[]) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-
+    // Get the current timestamp
     const timestamp: string = new Date().toISOString().replace(/[:.]/g, '-');
-    const db = await openDb("db-" + timestamp);
+    const dbName: string = "db-" + timestamp;
+    const db = await openDb(dbName);
     await db.exec('DROP TABLE IF EXISTS scraped_data');
-    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, "error" INTEGER DEFAULT 0, link TEXT, data TEXT)');
+    await db.exec('CREATE TABLE IF NOT EXISTS scraped_data (id INTEGER PRIMARY KEY, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, "error" INTEGER DEFAULT 0, resource TEXT, description TEXT, pageTitle TEXT, link TEXT, data TEXT)');
     const start: number = performance.now();
     const data: LinkScrape[] = [];
 
@@ -22,13 +24,17 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
             console.log(`Scraping words from ${urlDetail.Link}`);
             await page.goto(urlDetail.Link, { waitUntil: 'domcontentloaded' });
             // Scrape the HTML content and remove HTML tags
-              const textContent = await page.evaluate(() => {
+            const textContent = await page.evaluate(() => {
                 const bodyText = document.body.innerText;
-                return bodyText.toLocaleLowerCase();
+                const title = document.title;
+                return {
+                    title,
+                    bodyText: bodyText?.toLocaleLowerCase() ?? ""
+                }
             });
 
             // Convert the text content into a comma-separated list of words
-            const words = textContent
+            const words = textContent.bodyText
               .replace(/[():;#©.]/g, '')
               .replace(/[,]/g, ' ')
               .split(/\s+/).filter(word => word && word.length > 0);
@@ -36,13 +42,13 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
             
             // const data = await scrape();
             if (commaSeparatedWords) {
-              await db.run('INSERT INTO scraped_data (link, data) VALUES (?, ?)', urlDetail.Link, commaSeparatedWords);
-              data.push({ Link: urlDetail.Link, Words: commaSeparatedWords.split(','), Error: false }); // Add the link and words to the data array, Error: false });
+              await db.run('INSERT INTO scraped_data (pageTitle, resource, description, link, data) VALUES (?, ?, ?, ?, ?)', textContent.title, urlDetail.Resource, urlDetail.Description, urlDetail.Link, commaSeparatedWords);
+              data.push({ PageTitle: textContent.title, Resource: urlDetail.Resource, Description: urlDetail.Description, Link: urlDetail.Link, Words: commaSeparatedWords.split(','), Error: false }); // Add the link and words to the data array, Error: false });
             }
 
             console.log(`Data from ${urlDetail.Link}: ${words.length}`);
         } catch (error) {
-            console.error(`Error scraping ${urlDetail.Link}:`, error);
+            console.error(chalk.red(`Error scraping ${urlDetail.Link}:`, error));
             let errorMessage;
             if (error instanceof Error) {
                 // If the error is an instance of Error, use the message property
@@ -51,8 +57,8 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
                 // If the error is not an instance of Error, convert it to a string
                 errorMessage = String(error);
             }  
-            await db.run('INSERT INTO scraped_data (error, link, data) VALUES (1, ?, ?)', urlDetail.Link, errorMessage);
-            data.push({ Link: urlDetail.Link, ErrorMessage: errorMessage, Error: true });
+            await db.run('INSERT INTO scraped_data (error, resource, description, link, data) VALUES (1, ?, ?, ?, ?)', urlDetail.Resource, urlDetail.Description,urlDetail.Link, errorMessage);
+            data.push({ Resource: urlDetail.Resource, Description: urlDetail.Description, Link: urlDetail.Link, ErrorMessage: errorMessage, Error: true });
         }
         
         const current: number = performance.now();
@@ -66,15 +72,7 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
 
     console.log(`Total execution time: ${totalElapsedSeconds.toFixed(3)} seconds`);
     const jsonString: string = JSON.stringify(data, null, 2);
-    // Get the current timestamp
     const filename = `output_${timestamp}.json`;
-    // try {
-    //     await fs.writeFile(filename, jsonString);
-    //     console.log(`File has been written successfully as ${filename}`);
-    // } catch (err) {
-    //     console.error('Error writing to file', err);
-    // }
-    // await fs.writeFile('output.json', jsonString);
 
     fs.writeFile(filename, jsonString, (err) => {
         if (err) {
@@ -83,7 +81,7 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
             console.log(`File ${filename} has been written successfully`);
         }
     });
-    console.log('Scraping completed and data saved to database.');
+    console.log(chalk.green(`Scraping completed and data saved to database: db${dbName}.`));
 }
 
 async function scrape() {
