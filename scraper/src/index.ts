@@ -3,7 +3,7 @@ import { openDb } from './database';
 import chalk from 'chalk';
 // from https://mikehodges.net/OrlandoHousing/webScraping/data/Link_for_Funds_With_PrimaryKey.json
 import links from '../Link_for_Funds_With_PrimaryKey.json';
-import { LinkDetails, LinkScrape } from './types/link';
+import { DateRange, LinkDetails, LinkScrape } from './types/link';
 import { performance } from 'perf_hooks';
 import * as fs from 'fs';
 
@@ -38,12 +38,23 @@ async function scrapeUrls(urlDetails: LinkDetails[]) {
               .replace(/[():;#©.]/g, '')
               .replace(/[,]/g, ' ')
               .split(/\s+/).filter(word => word && word.length > 0);
+
+            const dateRegex = /\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b/g;
+            const dates = words.join(" ").match(dateRegex) ?? [];
+            const ranges:DateRange[] = [];
+            for (let i = 0; i < dates.length - 1; i++) {
+                const startDate = new Date(dates[i]);
+                const endDate = new Date(dates[i + 1]);
+                if (endDate > startDate) {
+                    ranges.push({ start: dates[i], end: dates[i + 1] });
+                }
+            }
             const commaSeparatedWords = words.join(',');
             
             // const data = await scrape();
             if (commaSeparatedWords) {
               await db.run('INSERT INTO scraped_data (pageTitle, resource, description, link, data) VALUES (?, ?, ?, ?, ?)', textContent.title, urlDetail.Resource, urlDetail.Description, urlDetail.Link, commaSeparatedWords);
-              data.push({ PageTitle: textContent.title, Resource: urlDetail.Resource, Description: urlDetail.Description, Link: urlDetail.Link, Words: commaSeparatedWords.split(','), Error: false }); // Add the link and words to the data array, Error: false });
+              data.push({ PageTitle: textContent.title, Resource: urlDetail.Resource, Description: urlDetail.Description, Link: urlDetail.Link, Words: commaSeparatedWords.split(','), Error: false, Ranges: ranges }); // Add the link and words to the data array, Error: false });
             }
 
             console.log(`Data from ${urlDetail.Link}: ${words.length}`);
