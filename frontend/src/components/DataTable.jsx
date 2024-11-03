@@ -1,8 +1,6 @@
 import React from "react";
 
 function DataTable({ funding }) {
-  console.log(funding);
-
   let filterOutWords = [
     "housing",
     "community",
@@ -25,11 +23,13 @@ function DataTable({ funding }) {
     })
     .sort((a, b) => b.rating - a.rating);
 
+  const currDate = new Date();
+
   function getColor(value) {
     if (value > 20) {
       return "green";
     } else if (value > 5) {
-      return "yellow";
+      return "orange";
     } else {
       return "red";
     }
@@ -38,8 +38,8 @@ function DataTable({ funding }) {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-sm text-left text-white">
+          <thead className="text-xs text-white uppercase bg-gray-50 dark:bg-gray-700">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Id
@@ -82,7 +82,7 @@ function DataTable({ funding }) {
                 key={index}
                 className="text-black border-b-2 border-black my-2"
               >
-                <td>{index + 1}</td>
+                <td className="text-center">{index + 1}</td>
                 <td></td>
                 <td data-label="link">
                   <a href={fun.Link} target="_blank" className="text-blue-600">
@@ -91,11 +91,18 @@ function DataTable({ funding }) {
                 </td>
                 <td></td>
                 <td>{fun.Resource}</td>
-                <td style={{ color: getColor(fun.rating) }}>{fun.rating}</td>
-                <td>{fun.Description}</td>
+                <td
+                  className="text-center font-bold"
+                  style={{ color: getColor(fun.rating) }}
+                >
+                  {fun.rating}
+                </td>
+                <td className="py-2">{fun.Description}</td>
                 <td></td>
                 <td></td>
-                <td>{fun.CreatedAt}</td>
+                <td className="text-center">
+                  {fun.CreatedAt ?? currDate.toLocaleDateString()}
+                </td>
                 <td></td>
               </tr>
             ))}
