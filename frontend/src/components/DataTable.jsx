@@ -1,8 +1,6 @@
 import React from "react";
 
 function DataTable({ funding }) {
-  console.log(funding);
-
   let filterOutWords = [
     "housing",
     "community",
