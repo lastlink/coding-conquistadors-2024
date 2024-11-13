@@ -22,18 +22,20 @@ function SubscribePage() {
     e.target.reset();
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
         ref={form}
         onSubmit={sendEmail}
-        className="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className="w-full max-w-md px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Contact Us</h2>
+        <h2 className="mb-6 text-2xl font-bold text-center">
+          Subscribe For More Info!
+        </h2>
 
         <div className="mb-4">
           <label
             htmlFor="user_name"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block mb-2 text-sm font-bold text-gray-700"
           >
             Name
           </label>
@@ -41,7 +43,7 @@ function SubscribePage() {
             type="text"
             name="user_name"
             id="user_name"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             required
           />
         </div>
@@ -49,7 +51,7 @@ function SubscribePage() {
         <div className="mb-4">
           <label
             htmlFor="user_email"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block mb-2 text-sm font-bold text-gray-700"
           >
             Email
           </label>
@@ -57,7 +59,7 @@ function SubscribePage() {
             type="email"
             name="user_email"
             id="user_email"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             required
           />
         </div>
@@ -65,14 +67,14 @@ function SubscribePage() {
         <div className="mb-6">
           <label
             htmlFor="message"
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block mb-2 text-sm font-bold text-gray-700"
           >
             Message
           </label>
           <textarea
             name="message"
             id="message"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"
+            className="w-full h-32 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             required
           ></textarea>
         </div>
@@ -81,7 +83,7 @@ function SubscribePage() {
           <input
             type="submit"
             value="Send"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+            className="px-4 py-2 font-bold text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-700 focus:outline-none focus:shadow-outline"
           />
         </div>
       </form>
